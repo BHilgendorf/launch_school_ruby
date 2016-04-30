@@ -13,34 +13,37 @@ puts "-----------------------------------"
 
 loop do # main loop
   loan_amount = " "
+  puts "Please enter the loan amount:"
+
   loop do
-    puts "Please enter the loan amount:"
     loan_amount = gets.chomp
 
     if integer?(loan_amount)
       loan_amount = loan_amount.to_i
       break
     else
-      puts "That is not a valid amount. Please enter loan amount:"
+      puts "That is not a valid amount. Please enter an amount, no need for $ or commas."
     end
   end
 
   apr = " "
+  puts "Enter Anual Percentage Rate. (Ex: For 4% enter 4.0  For 3.5% enter 3.5)"
+  
   loop do
-    puts "Enter Anual Percentage Rate. (Ex: For 4% enter 4.0  For 3.5% enter 3.5)"
     apr = gets.chomp
 
     if float?(apr)
       apr = apr.to_f
       break
     else
-      puts "That is not a valid percentage rate. Please enter the rate: "
+      puts "That is not a valid percentage rate. Please enter the rate above 0.0 "
     end
   end
 
   months = " "
+  puts "Enter the loan duration (in number of months):"
+
   loop do
-    puts "Enter the loan duration (in number of months):"
     months = gets.chomp
 
     if integer?(months)
