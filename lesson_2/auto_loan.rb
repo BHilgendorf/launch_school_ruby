@@ -14,10 +14,11 @@ rescue ArgumentError
   nil
 end
 
+clear_screen
 puts "Welcome to the Auto Loan Calculator"
 puts "-----------------------------------"
 
-loop do # main loop
+loop do
   loan_amount = " "
   puts "Please enter the loan amount:"
 
@@ -28,7 +29,7 @@ loop do # main loop
       loan_amount = loan_amount.to_f
       break
     else
-      puts "Please enter a positive amount, no need for $ or commas or periods."
+      puts "Please enter a positive amount, no need for $ or commas."
     end
   end
 
@@ -38,11 +39,11 @@ loop do # main loop
   loop do
     apr = gets.chomp
 
-    if float?(apr)
+    if float?(apr) && apr.to_f >= 0
       apr = apr.to_f
       break
     else
-      puts "That is not a valid percentage rate."
+      puts "Please enter a percentage rate. (Ex: For 4% enter 4.0  For 3.5% enter 3.5)"
     end
   end
 
@@ -63,7 +64,7 @@ loop do # main loop
   if apr == 0
     monthly_payment = loan_amount / months
   else
-    monthly_rate = apr / 12 / 100
+    monthly_rate = (apr / 12) / 100
     monthly_payment = (loan_amount * ((monthly_rate * (1 + monthly_rate)**months) /
         ((1 + monthly_rate)**months - 1)))
   end
