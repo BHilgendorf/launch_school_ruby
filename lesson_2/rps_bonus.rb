@@ -1,10 +1,10 @@
-VALID_CHOICES = { rock: "r", paper: "p", scissors: "s", lizard: "l", spock: "k" }
+VALID_CHOICES = { rock: "r", paper: "p", scissors: "s", lizard: "l", spock: "k" }.freeze
 
 WINNING_RULES = { scissors: [:paper, :lizard],
                   paper: [:rock, :spock],
                   rock: [:lizard, :scissors],
                   lizard: [:spock, :paper],
-                  spock: [:scissors, :rock] }
+                  spock: [:scissors, :rock] }.freeze
 
 def clear_screen
   system('clear') || system('cls')
