@@ -28,10 +28,10 @@ def display_results(player, computer)
   end
 end
 
-final_score = 5
+FINAL_SCORE = 5
 clear_screen
 prompt("Welcome to Rock, Paper, Scissors, Lizard, Spock!")
-prompt("Each round the winner gets a point. First one to #{final_score} wins!")
+prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins!")
 
 loop do
   player_score = 0
@@ -43,13 +43,10 @@ loop do
       prompt("Choose One: R => Rock, P => Paper, S => Scissors, L => Lizard, K => Spock")
       choice = gets.chomp.downcase
 
-      if VALID_CHOICES.value?(choice)
-        choice = VALID_CHOICES.key(choice)
-        break
-      else
-        prompt("That's not a valid choice")
-      end
+      break if VALID_CHOICES.value?(choice)
+      prompt("That is not a valid choice.")
     end
+    choice = VALID_CHOICES.key(choice)
 
     computer_choice = VALID_CHOICES.keys.sample
     puts("You chose: #{choice} Computer chose: #{computer_choice}")
@@ -62,15 +59,15 @@ loop do
       computer_score += 1
     end
 
-    break if player_score >= final_score || computer_score >= final_score
+    break if player_score >= FINAL_SCORE || computer_score >= FINAL_SCORE
     prompt("Please hit enter to continue")
     gets
     clear_screen
   end
 
-  if player_score >= final_score
+  if player_score >= FINAL_SCORE
     prompt("You win the game.")
-  elsif computer_score >= final_score
+  else
     prompt("Computer wins the game.")
   end
 
