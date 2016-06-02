@@ -1,10 +1,11 @@
+
 INITIAL_MARKER = ' '.freeze
 PLAYER_MARKER = 'X'.freeze
 COMPUTER_MARKER = 'O'.freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
-FINAL_SCORE = 3
+FINAL_SCORE = 5
 
 def clear_screen
   system('clear') || system('cls')
@@ -41,22 +42,21 @@ def initialize_board
   new_board
 end
 
+def choose_player_turn(current_player)
+  prompt "Press 1 to go first. 2 to go second"
+  input = 0
+  loop do
+    input = gets.chomp.to_i
+    break if input == 1 || input == 2
+    prompt "There are only players. Please select 1 or 2"
+  end
+  input == 1 ? current_player = 'player' : current_player = 'computer'
+  current_player
+end
 
 def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
-
-# My initial solution before refactoring with solution from course
-# def joinor(arr)
-#   new_string = ""
-#   return arr.last.to_s if arr.length == 1
-#   arr.each_with_index do |item, index|
-#     new_string += item.to_s + ", "
-#   break if index == arr.length - 2
-#   end
-#   new_string += "or " + arr.last.to_s
-#   new_string
-# end
 
 def joinor(arr, delimiter = ', ', word = "or")
   arr[-1] = "#{word} #{arr.last}" if arr.size > 1
@@ -82,6 +82,7 @@ def find_at_risk_square(line, board, marker)
   end
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def computer_places_piece!(brd)
   square = nil
   WINNING_LINES.each do |line|
@@ -96,7 +97,7 @@ def computer_places_piece!(brd)
     end
   end
 
-  if !square && brd[5] == INITIAL_MARKER 
+  if !square && brd[5] == INITIAL_MARKER
     square = 5
   end
 
@@ -105,6 +106,19 @@ def computer_places_piece!(brd)
   end
 
   brd[square] = COMPUTER_MARKER
+end
+# rubocop: enable Metrics/MethodLength, Metrics/AbcSize
+
+def place_piece!(board, current_player)
+  if current_player == 'player'
+    player_places_piece!(board)
+  else
+    computer_places_piece!(board)
+  end
+end
+
+def next_player(current_player)
+  current_player = (current_player == 'player' ? 'computer' : 'player')
 end
 
 def board_full?(brd)
@@ -121,7 +135,7 @@ def keep_score(winner, score)
   elsif winner == 'Computer'
     score[:computer] += 1
   end
-  return score
+  score
 end
 
 def detect_winner(brd)
@@ -146,21 +160,22 @@ def detect_winner(brd)
 end
 
 loop do
+  clear_screen
+  current_player = ""
   score = { player: 0, computer: 0 }
   prompt "Welcome to Tick Tac Toe."
-  prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins!")
+  prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins")
+  current_player = choose_player_turn(current_player)
+
   loop do
     board = initialize_board
-    display_board(board, score)
 
     loop do
-      player_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
-      computer_places_piece!(board)
       display_board(board, score)
+      place_piece!(board, current_player)
+      current_player = next_player(current_player)
       break if someone_won?(board) || board_full?(board)
     end
-
     display_board(board, score)
     keep_score(detect_winner(board), score)
 
@@ -176,8 +191,14 @@ loop do
   end
 
   prompt "Play again? (y or n)"
-  answer = gets.chomp
-  break unless answer.downcase.start_with?('y')
+  answer = ""
+
+  loop do
+    answer = gets.chomp.downcase
+    break if answer == 'y' || answer == 'n'
+    prompt "Please enter only y or n"
+  end
+  break unless answer == 'y'
 end
 
 prompt "Thanks for playing Tic Tac Toe! Goodbye!"
