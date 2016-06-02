@@ -4,8 +4,7 @@ COMPUTER_MARKER = 'O'.freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
-FINAL_SCORE = 5
-
+FINAL_SCORE = 3
 
 def clear_screen
   system('clear') || system('cls')
@@ -42,6 +41,7 @@ def initialize_board
   new_board
 end
 
+
 def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
@@ -60,8 +60,7 @@ end
 
 def joinor(arr, delimiter = ', ', word = "or")
   arr[-1] = "#{word} #{arr.last}" if arr.size > 1
-  arr.join(delimiter)  #no need for if arr.size == 2 since only odd numbers will ever be listed
-
+  arr.join(delimiter)
 end
 
 def player_places_piece!(brd)
@@ -75,8 +74,36 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
+def find_at_risk_square(line, board, marker)
+  if board.values_at(*line).count(marker) == 2
+    board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
+  else
+    nil
+  end
+end
+
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
+  square = nil
+  WINNING_LINES.each do |line|
+    square = find_at_risk_square(line, brd, COMPUTER_MARKER)
+    break if square
+  end
+
+  if !square
+    WINNING_LINES.each do |line|
+      square = find_at_risk_square(line, brd, PLAYER_MARKER)
+      break if square
+    end
+  end
+
+  if !square && brd[5] == INITIAL_MARKER 
+    square = 5
+  end
+
+  if !square
+    square = empty_squares(brd).sample
+  end
+
   brd[square] = COMPUTER_MARKER
 end
 
@@ -96,7 +123,6 @@ def keep_score(winner, score)
   end
   return score
 end
-
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
@@ -120,22 +146,23 @@ def detect_winner(brd)
 end
 
 loop do
-score = {:player => 0, :computer => 0}
-prompt "Welcome to Tick Tac Toe."
-prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins!")
+  score = { player: 0, computer: 0 }
+  prompt "Welcome to Tick Tac Toe."
+  prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins!")
   loop do
     board = initialize_board
+    display_board(board, score)
 
     loop do
-      display_board(board,score)
       player_places_piece!(board)
       break if someone_won?(board) || board_full?(board)
       computer_places_piece!(board)
+      display_board(board, score)
       break if someone_won?(board) || board_full?(board)
     end
 
-    display_board(board,score)
-    keep_score((detect_winner(board)),score)
+    display_board(board, score)
+    keep_score(detect_winner(board), score)
 
     if someone_won?(board)
       prompt "#{detect_winner(board)} won this round!"
