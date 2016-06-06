@@ -78,36 +78,29 @@ def find_at_risk_square(line, board, marker)
   if board.values_at(*line).count(marker) == 2
     board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
   else
-    nil
   end
 end
 
-# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def computer_places_piece!(brd)
   square = nil
   WINNING_LINES.each do |line|
     square = find_at_risk_square(line, brd, COMPUTER_MARKER)
     break if square
   end
-
   if !square
     WINNING_LINES.each do |line|
       square = find_at_risk_square(line, brd, PLAYER_MARKER)
       break if square
     end
   end
-
   if !square && brd[5] == INITIAL_MARKER
     square = 5
   end
-
   if !square
     square = empty_squares(brd).sample
   end
-
   brd[square] = COMPUTER_MARKER
 end
-# rubocop: enable Metrics/MethodLength, Metrics/AbcSize
 
 def place_piece!(board, current_player)
   if current_player == 'player'
@@ -118,7 +111,7 @@ def place_piece!(board, current_player)
 end
 
 def next_player(current_player)
-  current_player = (current_player == 'player' ? 'computer' : 'player')
+  current_player == 'player' ? 'computer' : 'player'
 end
 
 def board_full?(brd)
