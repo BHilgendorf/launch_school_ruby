@@ -42,7 +42,7 @@ def initialize_board
   new_board
 end
 
-def choose_player_turn(current_player)
+def choose_player_turn
   prompt "Press 1 to go first. 2 to go second"
   input = 0
   loop do
@@ -50,8 +50,7 @@ def choose_player_turn(current_player)
     break if input == 1 || input == 2
     prompt "There are only players. Please select 1 or 2"
   end
-  input == 1 ? current_player = 'player' : current_player = 'computer'
-  current_player
+  input == 1 ? 'player' : 'computer'
 end
 
 def empty_squares(brd)
@@ -128,7 +127,6 @@ def keep_score(winner, score)
   elsif winner == 'Computer'
     score[:computer] += 1
   end
-  score
 end
 
 def detect_winner(brd)
@@ -158,7 +156,7 @@ loop do
   score = { player: 0, computer: 0 }
   prompt "Welcome to Tick Tac Toe."
   prompt("Each round the winner gets a point. First one to #{FINAL_SCORE} wins")
-  current_player = choose_player_turn(current_player)
+  current_player = choose_player_turn
 
   loop do
     board = initialize_board
