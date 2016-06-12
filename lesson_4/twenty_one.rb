@@ -2,7 +2,7 @@ def clear_screen
   system('clear') || system('cls')
 end
 
-def initialize_deck(deck)
+def initialize_deck
   deck = { hearts_ace: 11, diamonds_ace: 11, spades_ace: 11, clubs_ace: 11,
            hearts_2: 2, diamonds_2: 2, spades_2: 2, clubs_2: 2,
            hearts_3: 3, diamonds_3: 3, spades_3: 3, clubs_3: 3,
@@ -16,7 +16,6 @@ def initialize_deck(deck)
            hearts_J: 10, diamonds_J: 10, spades_J: 10, clubs_J: 10,
            hearts_Q: 10, diamonds_Q: 10, spades_Q: 10, clubs_Q: 10,
            hearts_K: 10, diamonds_K: 10, spades_K: 10, clubs_K: 10 }
-  deck
 end
 
 def deal_card(deck, hand)
@@ -36,7 +35,7 @@ end
 def display_hands(player_hand, player_total, dealer_hand, dealer_total)
   puts "Dealer has: #{dealer_hand}"
   puts "Dealer as a score of: #{dealer_total}"
-  puts "--------------------------------------------------"
+  puts "-------------------------------------------------------------"
   puts "Player has: #{player_hand}"
   puts "Player has a score of: #{player_total}"
 end
@@ -61,13 +60,27 @@ def winner?(player_total, dealer_total)
   if player_total == 21 ||
      busted?(dealer_total) ||
      player_total < 21 && (player_total > dealer_total)
-    winner = "You are the winner of this hand."
+     winner = "player"
   elsif player_total == dealer_total
-    winner = "It is a tie"
+    winner = "tie"
   else
-    winner = "The Dealer is the winner of this hand"
+    winner = "dealer"
   end
   winner
+end
+
+def display_winner(winner, player_total, dealer_total)
+  if busted?(dealer_total)
+    puts "Dealer busted, you win!"
+  elsif busted?(player_total)
+    puts "You busted. Dealer wins!"
+  elsif winner =="tie"
+    puts "It's a tie hand."
+  elsif winner == 'player'
+    puts "You had the higher hand. You win"
+  else
+  puts "Dealer had the higher hand. Dealer wins"
+  end
 end
 
 def another_hand?
@@ -82,12 +95,12 @@ def another_hand?
 end
 
 loop do
-  deck = {}
   player_hand = {}
   dealer_hand = {}
+  winner = {}
 
   clear_screen
-  deck = initialize_deck(deck)
+  deck = initialize_deck
   2.times do
     deal_card(deck, player_hand)
     deal_card(deck, dealer_hand)
@@ -112,13 +125,10 @@ loop do
   clear_screen
   display_hands(player_hand, player_total, dealer_hand, dealer_total)
 
-  if busted?(player_total)
-    puts "\nYou have busted. Dealer wins this hand."
-  else
+  if !busted?(player_total)
     puts "\nPlayer has chosen to 'stay'. It is now the dealer's turn"
-    if dealer_total > 17 && dealer_total < 21
-      winner = winner?(player_total, dealer_total)
-      puts "\nDealer has chosen to 'stay' and #{winner}!"
+    if dealer_total > 17 && dealer_total < 21 || dealer_total == 21
+      puts "\nDealer has chosen to 'stay'."
     else
       loop do
         puts "Press any key to give the dealer the next card"
@@ -129,9 +139,12 @@ loop do
         display_hands(player_hand, player_total, dealer_hand, dealer_total)
         break if dealer_total >= 17 || busted?(dealer_total)
       end
-      puts "\n#{winner?(player_total, dealer_total)}"
     end
   end
+
+  puts "\n-----------------------------------------------------------"
+  winner = winner?(player_total, dealer_total)
+  display_winner(winner, player_total, dealer_total)
 
   puts "\nWould you like to play another hand?"
   break if !another_hand?
