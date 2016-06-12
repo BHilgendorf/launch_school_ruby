@@ -59,10 +59,8 @@ end
 def winner?(player_total, dealer_total)
   if player_total == 21 ||
      busted?(dealer_total) ||
-     player_total < 21 && (player_total > dealer_total)
-     winner = "player"
-  elsif player_total == dealer_total
-    winner = "tie"
+     player_total < 21 && (player_total > dealer_total) then winner = "player"
+  elsif player_total == dealer_total then winner = "tie"
   else
     winner = "dealer"
   end
@@ -74,12 +72,12 @@ def display_winner(winner, player_total, dealer_total)
     puts "Dealer busted, you win!"
   elsif busted?(player_total)
     puts "You busted. Dealer wins!"
-  elsif winner =="tie"
+  elsif winner == "tie"
     puts "It's a tie hand."
   elsif winner == 'player'
     puts "You had the higher hand. You win"
   else
-  puts "Dealer had the higher hand. Dealer wins"
+    puts "Dealer had the higher hand. Dealer wins"
   end
 end
 
@@ -97,7 +95,6 @@ end
 loop do
   player_hand = {}
   dealer_hand = {}
-  winner = {}
 
   clear_screen
   deck = initialize_deck
@@ -113,7 +110,7 @@ loop do
 
   loop do
     player_choice = hit_or_stay(player_choice)
-    break if player_choice.downcase == 's'
+    break if player_choice == 's'
     deal_card(deck, player_hand)
     player_total = calculate_total(player_hand)
     break if busted?(player_total)
