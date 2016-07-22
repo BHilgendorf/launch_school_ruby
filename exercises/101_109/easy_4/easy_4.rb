@@ -163,53 +163,7 @@
 #   array.each_with_object([]) { |number, arr| arr << total += number}
 # end
 
-##----------------------------------------------------------------------
-
-# # # Convert a string to a number.
-# # # Write a method that takes a String of digits, and returns the appropriate number as an integer. 
-# # # Do not use any .to_i method.
-
-# DIGITS = { '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
-#            '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9 }
-
-
-# def string_to_num(string)
-#     string = string.chars.map { |character| DIGITS[character]}
-
-#     value = 0
-#     string.each { |number| value = 10 * value + number }
-#     value
-# end 
-
-##-----------------------------------------------------------------------
-# ## Signed strings to numbers.
-# ## If a - is included, it should be a negative number. 
-# ## If a + is included, it should be a positive number
-
-
-# DIGITS = { '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
-#            '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9 }
-
-
-# def to_num(string)
-#     string = string.chars.map { |character| DIGITS[character]}
-
-#     value = 0
-#     string.each { |number| value = 10 * value + number}
-#     value
-# end 
-
-# def string_to_signed_int(string)
-#   if string.include?("-")
-#     string.delete!("-")
-#     to_num(string) * -1
-#   else
-#     string.delete!("+")
-#     to_num(string)
-#   end
-# end
-
-##--------------------------------------------------------------
+#-----------------------------------------------------------
 
 
 
