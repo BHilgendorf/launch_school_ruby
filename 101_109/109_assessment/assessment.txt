@@ -1,0 +1,67 @@
+Local Variables
+
+1) This demonstrates local variable scoping rules. The variable str is initialized outside of the
+do/end block. It is therefore accessible within the block. On line 4 the variable str is re-assinged to a new object, the interger 2. That re-assignment is visible in the outer scope and is therefore output when puts is called on str in line 8.
+
+2) The error is raised when calling "puts" on str. The local variable str is initizlized within 
+the block, and is therefore unavailable outside the block. There is no variable or method called str that is available ouside the block, therefore the exception will be raised when the code is run.
+   
+3) No, you cannot say with certainty. It is possible that str was intizlized or that a method called str was created in the code above. Without knowing the code above, it is unclear if this is a method call or reference to a local variable. If it is a local variable, it is unclear if was previously initialized or if it is being initialized within the block shown. 
+
+4) Local variables are not available within a method unless they are passed in as an argument. 
+In this case, str is not passed to the method and therefore not avaialbe within the method scope. When the method is called, the exception will be raised as line 4 calls puts on str. At this point in the code there is not a known variable or method that is accessible with the name str. 
+
+
+5) Methods create their own scope. The str variable outside the method is pointing to the string object of 'hello'. The str variable within the method is intialized within the method and is pointing to a new string object of 'world'. Though both are named str, they are pointing to different objects and do not have the same scope. The method a_method returns the string 'world', when the method is called, but does not alter the str variable that was intizlized outside the method. That return value is not captured and line 8 outputs the string of 'hello'. 
+
+6) On line 3, the variable a is re-assigned to a new object, the string object 'hi'. After this line, there are now two varaible and two objects. a is pointing to the string object 'hi', and b is still pointing to the string object 'hello'. Since the variables are now pointing to different objects, appending of the string " world" on line 4 will not affect variable b. line 6 will output the string of " hi world", line 7 will output 'hello'.
+
+7) The number of variables and objects changes as you progress through the code.
+After line 2, there are two variables, two objects (a pointing to 'hello' and b pointing to 'world')
+After line 4, there are 3 variables, two objects (a and c pointing to 'hello' and b point to 'world')
+After line 5, there are 4 variables, two objects (a and c pointing to 'hello'
+   and b and d pointing to 'world')
+After line 6, there are still 4 variables and two objects. However, now a, b and c are pointing to 'hello' and only d is left pointing to 'world'
+
+Line 7 makes no change on the variable a since a and c are already pointing to the same object. At the end of line 7, there are 4 variables and two objects. a, b and c are pointing to 'hello' and only d is pointing to 'world'
+
+
+
+
+Mutating Method Arguments
+
+1) The + method called within the method change does not mutate the calling object. It creates a new string object. The return value of the method is "hello world", but that value is not captured. The variable greeting is still assigned to the string object "hello" and that is what is output when puts is called on the variable greeting in line 8.
+
+2) The method of << within the change method DOES mutating the calling object. When the method change is called on line 6, the variable greeting, which is pointing to the string object of "hello" is passed into the method as an argument.  When the << method is called on line 2, that changes the original object that greeting was pointing to in addition to the method varaible of param that is scoped within the method. The return value of the method is "hello world", but this is not captured. Line 8 outputs the string of "hello world" since the original object was mutated within the method. << is a destructive method.
+
+3) Line 2 is re-assigning the param variable (intizlied as a method variable on line 1) to the new string object of "hi". The param variable within the method is now pointing at a different object than the variable greeting. The method call of << on line 3 is only being performed on the variable param and has no effect on the object that the greeting variable is pointing to.  The return value of the method is "hi world", but that is not captured anywhere. Greeting remains unmodified line 9 outputs the string object "hello"
+
+4) Line 2 is re-assignement of the param variable (initialized as a method variable on line 1) and that returns a new string object. Param and greeting are now pointing at different objects and param is only scoped at the method level. The code in lines 3-5 of the method only modify the param variable. The return value of the method is "hi world", but this is not captured. On line 11, the string object 'hello' is output.
+
+
+
+Working with Collections
+
+1) When called on an array, map invokes the code in the block for each element in the array. Map will return a new array with each element transformed based on the block's return value. 
+
+2) When called on an array, select invokes the code in the block for each element in the array and return a new array based on the return value of the block. If the return value of the block evaluates to true (ie, is "truthy"), the element will be selected. It will not be selected if the return value evaluates to "false" (i.e is "falsey").
+
+3) Map returns a new array with elements transformed based on the return value of the block. In both line 1 and 3, each element in the array is transformed and the new array of [2,3,4] is returned. The subtle difference between the two is in the block of code with the map method. In line 1, the block of n + 1 is adding the element and the integer 1 and returning that value. In line 3, the block is reassigning n to equal to the element plus the integer 1. Here it returns the value of n. It is attempting to change the elements while iterating through the array. This ill advised, therefore line 1 is the prefered approach. If the desire is for the original array to be modified, using the map! method would be more appropriate.
+
+4)Select will return a new array based on the return value of the block. If the block evaluates to true, the element itself is selected. The array that is returned can only contain elements in the original array, or an empty array if none of the elements are selected. Map transforms the element in the array based on the block's return value. In this code block, the first element 1 is not greater than 2, therefore the return value is false, and the element is transformed to false. The next element of 2 is also not greater than 2. The return value is false and the element is transformed to false. The last element of 3 is greater than 2 and returns the value of true. The element is transformed to true. The new array returned by the map method is [false, false, true] and is assigned to the variable arr. Line 5 will output [false, false, true]
+
+5) Map transforms each element in the array based on the return value of the block. The return value of the block is determined by the last expression evaluated. Puts n is the last expression in the block and the return value of this expression is nil. Therefore each element in the array will be transformed to nil. Map will return a new array of [nil, nil, nil] (an array of nils) at is assigned the the variable arr. On line 6, [nil, nil, nil] will be output.
+
+6) Select will return a new array that with either be empty or contain elements from the calling array, based on the return value of the block. If the return value evaluates to true (i.e. is "truthy"), the element will be selected. Select does not transform values. In this code, for each element in the array, the block evaluates to true, therefore each element is selected. (1 + 2, 2 + 2 and 3 + 2 all evaluate to true) and are therefore selected.  Select will return a new array of [1, 2, 3] which is assigned to the variable arr. On line 5, [1, 2, 3] will be output.
+
+7) Select will either select and element or not based on the return value of the block. The return value of the block is determined by the last evaluated expression. In this instance puts n is the last evaluated expression in the block. puts returns a value of nil. Since nil does not evaluate to true, the element is not selected.  For each element in the array, the return value of the block does not evaluate to true and the element is not selected. Select returns a new array of [] (an empty array) which is then assigned to the variable arr. On line 6, [] is output.
+
+
+
+
+
+
+
+
+
+
