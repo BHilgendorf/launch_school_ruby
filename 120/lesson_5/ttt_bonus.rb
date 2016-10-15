@@ -1,5 +1,3 @@
-require 'pry'
-
 module Displayable
   def clear_screen
     system('clear') || system('cls')
@@ -7,10 +5,11 @@ module Displayable
 
   def display_welcome_message
     puts "Welcome to Tic Tac Toe!"
-    puts "Each round the winner gets a point. First to #{Game::WINNING_SCORE} wins."
+    puts "We will play until someone reaches #{Game::WINNING_SCORE} points."
+    puts "The winner of each round will get 1 point."
     puts "Let's get started."
     puts ""
-    puts "----------------------------------------------------------------------"
+    puts "---------------------------------------------------------------------"
   end
 
   def display_names
@@ -23,7 +22,7 @@ module Displayable
   end
 
   def display_board
-    puts "#{human.name} is #{human.marker}. #{computer.name} is #{computer.marker}"
+    puts "#{human.name}: #{human.marker} #{computer.name}: #{computer.marker}"
     puts display_score
     puts " "
     board.draw
@@ -42,6 +41,7 @@ module Displayable
   end
 
   def display_round_result
+    clear_screen_and_display_board
     case board.winning_marker
     when human.marker
       puts "#{human.name} won this round!"
@@ -64,11 +64,11 @@ module Displayable
   end
 
   def display_score
-    "Score: #{human.name} => #{human.score}  #{computer.name} => #{computer.score}"
+    "Score => #{human.name}: #{human.score} #{computer.name}: #{computer.score}"
   end
 end
 
-#---------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Board Class
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
@@ -93,18 +93,15 @@ class Board
   end
 
   def at_risk_square(marker)
-    selection = nil
     WINNING_LINES.each do |line|
-      squares = @squares.values_at(*line)
-      marked_squares = squares.select { |element| element.marker == marker }
-      if marked_squares.count == 2
-        squares = @squares.select do |key, value|
-          line.include?(key) && value.marker == Square::INITIAL_MARKER
-        end
-        return squares.keys.first
+      line_of_squares = @squares.select { |key, _| line.include?(key) }
+      markers = line_of_squares.values.collect(&:marker)
+      if markers.count(marker) == 2 &&
+         markers.count(Square::INITIAL_MARKER) == 1
+        return line_of_squares.select { |_, value| value.unmarked? }.keys.first
       end
     end
-    selection
+    nil
   end
 
   def full?
@@ -152,7 +149,6 @@ class Board
     return false if markers.size != 3
     markers.all? { |element| element == markers.first }
   end
-
 end
 
 #-----------------------------------------------------------------------
@@ -197,11 +193,11 @@ end
 # Human Player Class
 
 class Human < Player
-  attr_accessor :choice
+  attr_accessor :turn
 
   def initialize
     super
-    @choice = 0
+    @turn = 0
   end
 
   def set_name
@@ -210,12 +206,12 @@ class Human < Player
     loop do
       answer = gets.chomp
       break if answer =~ /[a-zA-Z0-9]/
-      puts "Please enter only letters for your name."
+      puts "Please enter only letters and numbers."
     end
     self.name = answer.capitalize
   end
 
-  def set_marker
+  def choose_marker
     marker_choice = nil
     puts "Would you like to be #{MARKER_OPTIONS.join(' or ')}"
     loop do
@@ -237,7 +233,7 @@ class Computer < Player
     self.name = COMPUTER_NAMES.sample
   end
 
-  def set_marker(human_marker)
+  def assign_marker(human_marker)
     case human_marker
     when "X"
       self.marker = "O"
@@ -247,7 +243,7 @@ class Computer < Player
   end
 end
 
-#------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Game Class
 
 class Game
@@ -261,12 +257,10 @@ class Game
     @human = Human.new
     @computer = Computer.new
     @current_player = nil
-    @first_player
+    @first_player = nil
   end
 
-  #----------------------------------------------------------------------------
-
-  #Main Game Play--------------------------------------------------------------
+  # Main Game Play--------------------------------------------------------------
 
   def play
     game_setup
@@ -290,17 +284,15 @@ class Game
     display_welcome_message
     set_names
     display_names
-    set_markers
+    establish_markers
     choose_player_order
     set_player_order
-    clear_screen
-    display_board
+    clear_screen_and_display_board
   end
 
   def play_round
     loop do
       current_player_moves
-      clear_screen_and_display_board
       break if board.someone_won? || board.full?
       clear_screen_and_display_board if human_turn?
     end
@@ -313,9 +305,9 @@ class Game
     computer.set_name
   end
 
-  def set_markers
-    human.set_marker
-    computer.set_marker(human.marker)
+  def establish_markers
+    human.choose_marker
+    computer.assign_marker(human.marker)
   end
 
   def choose_player_order
@@ -329,11 +321,11 @@ class Game
       break if user_choice == 1 || user_choice == 2
       puts "Choice can only be 1 or 2"
     end
-    human.choice = user_choice
+    human.turn = user_choice
   end
 
   def set_player_order
-    case human.choice
+    case human.turn
     when 1
       @current_player = human.marker
     when 2
@@ -365,8 +357,6 @@ class Game
     end
     board[computer_selection] = computer.marker
   end
-
-
 
   def current_player_moves
     if human_turn?
@@ -402,6 +392,10 @@ class Game
     answer == 'y'
   end
 
+  def game_over?
+    human.score == WINNING_SCORE || computer.score == WINNING_SCORE
+  end
+
   def round_reset
     board.reset
     clear_screen_and_display_board
@@ -417,10 +411,6 @@ class Game
     choose_player_order
     set_player_order
     clear_screen_and_display_board
-  end
-
-  def game_over?
-    human.score == WINNING_SCORE || computer.score == WINNING_SCORE
   end
 end
 
