@@ -69,7 +69,6 @@ module Displayable
 end
 
 #-------------------------------------------------------------------------------
-# Board Class
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
@@ -122,8 +121,8 @@ class Board
     nil
   end
 
-  def square_5_unmarked?
-    @squares[5].unmarked?
+  def square_5_marked?
+    @squares[5].marked?
   end
 
   # rubocop:disable Metrics/AbcSize
@@ -152,7 +151,6 @@ class Board
 end
 
 #-----------------------------------------------------------------------
-# Square Class
 class Square
   INITIAL_MARKER = ' '.freeze
 
@@ -176,8 +174,6 @@ class Square
 end
 
 #---------------------------------------------------------------------
-# Player Class
-
 class Player
   MARKER_OPTIONS = ["X", "O"].freeze
 
@@ -190,14 +186,9 @@ class Player
 end
 
 #-----------------------------------------------------------------------
-# Human Player Class
-
 class Human < Player
-  attr_accessor :turn
-
   def initialize
     super
-    @turn = 0
   end
 
   def set_name
@@ -224,8 +215,6 @@ class Human < Player
 end
 
 #-----------------------------------------------------------------------
-# Computer Player Class
-
 class Computer < Player
   COMPUTER_NAMES = ["HAL", "Siri", "R2D2", "C3PO", "Johnny 5"].freeze
 
@@ -244,8 +233,6 @@ class Computer < Player
 end
 
 #-------------------------------------------------------------------------------
-# Game Class
-
 class Game
   include Displayable
 
@@ -258,9 +245,8 @@ class Game
     @computer = Computer.new
     @current_player = nil
     @first_player = nil
+    @player_order = 0
   end
-
-  # Main Game Play--------------------------------------------------------------
 
   def play
     game_setup
@@ -321,11 +307,11 @@ class Game
       break if user_choice == 1 || user_choice == 2
       puts "Choice can only be 1 or 2"
     end
-    human.turn = user_choice
+    @player_order = user_choice
   end
 
   def set_player_order
-    case human.turn
+    case @player_order
     when 1
       @current_player = human.marker
     when 2
@@ -345,17 +331,20 @@ class Game
     board[choice] = human.marker
   end
 
+  def offensive_move
+    board.at_risk_square(computer.marker)
+  end
+
+  def defensive_move
+    board.at_risk_square(human.marker)
+  end
+
   def computer_moves
-    if board.at_risk_square(computer.marker)
-      computer_selection = board.at_risk_square(computer.marker)
-    elsif board.at_risk_square(human.marker)
-      computer_selection = board.at_risk_square(human.marker)
-    elsif board.square_5_unmarked?
-      computer_selection = 5
-    else
-      computer_selection = board.empty_squares.sample
-    end
-    board[computer_selection] = computer.marker
+    square = offensive_move
+    square = defensive_move unless square
+    square = 5 unless square || board.square_5_marked?
+    square = board.empty_squares.sample unless square
+    board[square] = computer.marker
   end
 
   def current_player_moves
