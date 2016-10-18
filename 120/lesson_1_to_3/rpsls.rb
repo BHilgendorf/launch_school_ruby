@@ -12,8 +12,8 @@ module Displayable
 
   def display_moves
     puts "-----------------------------------------------------"
-    puts "#{human.name} chose #{human.move.value}"
-    puts "#{computer.name} chose #{computer.move.value}"
+    puts "#{human.name} chose #{human.move}"
+    puts "#{computer.name} chose #{computer.move}"
   end
 
   def display_winner
@@ -54,23 +54,12 @@ module Displayable
   end
 end
 # ---------------------------------------------------------------------
-class Move
-  VALID_CHOICES = { rock: "r", paper: "p", scissors: "s",
-                    lizard: "l", spock: "k" }.freeze
-
-  attr_reader :value
-
-  def initialize(value)
-    @value = value
-  end
-end
-
-# ------------------------------------------------------------------
 class Player
   attr_accessor :move, :name, :score
 
   def initialize
     reset_score
+    @move
   end
 
   def reset_score
@@ -90,7 +79,7 @@ class Human < Player
     loop do
       answer = gets.chomp
       break unless answer.strip.empty?
-      puts "Please enter your name. No blank entries please."
+      puts "Please enter your name using just letters and numbers."
     end
     self.name = answer
   end
@@ -99,10 +88,10 @@ class Human < Player
     choice = nil
     loop do
       choice = gets.chomp.downcase
-      break if Move::VALID_CHOICES.values.include?(choice)
+      break if RPSGame::VALID_CHOICES.values.include?(choice)
       puts "Sorry, that is not a valid choice."
     end
-    self.move = Move.new(Move::VALID_CHOICES.key(choice))
+    self.move = RPSGame::VALID_CHOICES.key(choice)
   end
 end
 # ----------------------------------------------------------------------
@@ -129,13 +118,13 @@ class Computer < Player
   def choose
     self.move = case name
                 when 'HAL'
-                  Move.new(generate_choices(HAL).sample)
+                  generate_choices(HAL).sample
                 when 'Siri'
-                  Move.new(generate_choices(SIRI).sample)
+                  generate_choices(SIRI).sample
                 when 'R2D2'
-                  Move.new(generate_choices(R2D2).sample)
+                  generate_choices(R2D2).sample
                 else
-                  Move.new(Move::VALID_CHOICES.keys.sample)
+                  RPSGame::VALID_CHOICES.keys.sample
                 end
   end
 end
@@ -152,6 +141,9 @@ class RPSGame
                            lizard: [:paper, :spock],
                            spock: [:rock, :scissors]
                          }.freeze
+
+  VALID_CHOICES = { rock: "r", paper: "p", scissors: "s",
+                    lizard: "l", spock: "k" }.freeze
 
   FINAL_SCORE = 3
   # ---------------------------------------------------------------------
@@ -234,11 +226,11 @@ class RPSGame
   end
 
   def human_won?
-    WINNING_COMBINATIONS[human.move.value].include?(computer.move.value)
+    WINNING_COMBINATIONS[human.move].include?(computer.move)
   end
 
   def computer_won?
-    WINNING_COMBINATIONS[computer.move.value].include?(human.move.value)
+    WINNING_COMBINATIONS[computer.move].include?(human.move)
   end
 
   def update_score
