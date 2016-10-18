@@ -17,12 +17,13 @@ module Displayable
   end
 
   def display_winner
-    if human.move > computer.move
-      puts "#{human.name} won!"
-    elsif human.move < computer.move
-      puts "#{computer.name} won!"
+    winner = determine_winner
+    if winner == human.name
+      puts "#{human.name} won this round!"
+    elsif winner == computer.name
+      puts "#{computer.name} won this round!"
     else
-      puts "It's a tie."
+      puts "It's a tie"
     end
   end
 
@@ -62,47 +63,8 @@ class Move
   def initialize(value)
     @value = value
   end
-
-  def scissors?
-    @value == :scissors
-  end
-
-  def paper?
-    @value == :paper
-  end
-
-  def rock?
-    @value == :rock
-  end
-
-  def lizard?
-    @value == :lizard
-  end
-
-  def spock?
-    @value == :spock
-  end
-
-  def >(other_move)
-    rock? && (other_move.scissors? || other_move.lizard?) ||
-      paper? && (other_move.rock? || other_move.spock?) ||
-      scissors? && (other_move.paper? || other_move.lizard?) ||
-      lizard? && (other_move.spock? || other_move.paper?) ||
-      spock? && (other_move.scissors? || other_move.rock?)
-  end
-
-  def <(other_move)
-    (rock? || spock?) && other_move.paper? ||
-      (paper? || lizard?) && other_move.scissors? ||
-      (scissors? || lizard?) && other_move.rock? ||
-      (spock? || paper?) && other_move.lizard? ||
-      (scissors? || rock?) && other_move.spock?
-  end
-
-  def to_s
-    @value
-  end
 end
+
 # ------------------------------------------------------------------
 class Player
   attr_accessor :move, :name, :score
@@ -128,7 +90,7 @@ class Human < Player
     loop do
       answer = gets.chomp
       break unless answer.strip.empty?
-      puts "Please enter only letters or numbers."
+      puts "Please enter your name. No blank entries please."
     end
     self.name = answer
   end
@@ -182,6 +144,14 @@ class RPSGame
   include Displayable
 
   attr_accessor :human, :computer
+  attr_reader :value
+
+  WINNING_COMBINATIONS = { rock: [:scissors, :lizard],
+                           paper: [:rock, :spock],
+                           scissors: [:paper, :lizard],
+                           lizard: [:paper, :spock],
+                           spock: [:rock, :scissors]
+                         }.freeze
 
   FINAL_SCORE = 3
   # ---------------------------------------------------------------------
@@ -255,10 +225,26 @@ class RPSGame
     end
   end
 
+  def determine_winner
+    if human_won?
+      human.name
+    elsif computer_won?
+      computer.name
+    end
+  end
+
+  def human_won?
+    WINNING_COMBINATIONS[human.move.value].include?(computer.move.value)
+  end
+
+  def computer_won?
+    WINNING_COMBINATIONS[computer.move.value].include?(human.move.value)
+  end
+
   def update_score
-    if human.move > computer.move
+    if determine_winner == human.name
       human.score += 1
-    elsif human.move < computer.move
+    elsif determine_winner == computer.name
       computer.score += 1
     end
   end
