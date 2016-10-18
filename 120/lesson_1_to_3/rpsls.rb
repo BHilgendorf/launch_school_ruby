@@ -53,20 +53,19 @@ module Displayable
     puts "Thanks for playing Rock, Paper, Scissors, Lizard, Spock."
   end
 end
-# ---------------------------------------------------------------------
+
 class Player
-  attr_accessor :move, :name, :score
+  attr_accessor :name, :score, :move
 
   def initialize
     reset_score
-    @move
   end
 
   def reset_score
     @score = 0
   end
 end
-# ---------------------------------------------------------------------
+
 class Human < Player
   def initialize
     super
@@ -79,7 +78,7 @@ class Human < Player
     loop do
       answer = gets.chomp
       break unless answer.strip.empty?
-      puts "Please enter your name using just letters and numbers."
+      puts "Name cannot be blank. Please enter your name."
     end
     self.name = answer
   end
@@ -94,7 +93,7 @@ class Human < Player
     self.move = RPSGame::VALID_CHOICES.key(choice)
   end
 end
-# ----------------------------------------------------------------------
+
 class Computer < Player
   SIRI = { rock: 2, paper: 2, scissors: 2, lizard: 2, spock: 2 }.freeze
   HAL = { rock: 5, paper: 1, scissors: 3 }.freeze
@@ -128,7 +127,7 @@ class Computer < Player
                 end
   end
 end
-# ---------------------------------------------------------------------
+
 class RPSGame
   include Displayable
 
@@ -146,7 +145,7 @@ class RPSGame
                     lizard: "l", spock: "k" }.freeze
 
   FINAL_SCORE = 3
-  # ---------------------------------------------------------------------
+
   def play
     game_setup
     loop do
@@ -162,7 +161,6 @@ class RPSGame
     end
     display_goodbye_message
   end
-  # ---------------------------------------------------------------------
 
   private
 
@@ -253,8 +251,6 @@ class RPSGame
       break if ['y', 'n'].include? answer.downcase
       puts "Sorry,input must be y or n"
     end
-
-    return false if answer == 'n'
     return true if answer == 'y'
   end
 
