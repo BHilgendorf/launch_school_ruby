@@ -34,13 +34,13 @@ module Hand
   def total
     total = 0
     hand.each do |card|
-      if card.ace?
-        total += 11
-      elsif card.jack? || card.queen? || card.king?
-        total += 10
-      else
-        total += card.face_value.to_i
-      end
+      total += if card.ace?
+                 11
+               elsif card.jack? || card.queen? || card.king?
+                 10
+               else
+                 card.face_value.to_i
+               end
     end
 
     hand.select(&:ace?).count.times do
@@ -141,6 +141,17 @@ class Human < Player
   def show_cards
     display_cards_and_total
   end
+
+  def hit_or_stay
+    answer = nil
+    puts "Would you like to (h)it or (s)stay?"
+    loop do
+      answer = gets.chomp.downcase
+      break if ['h', 's'].include?(answer)
+      puts "Please enter only 'h' or 's' "
+    end
+    answer
+  end
 end
 
 class Dealer < Player
@@ -181,15 +192,7 @@ class Game
 
   def player_turn
     loop do
-      answer = nil
-      puts "Would you like to (h)it or (s)stay?"
-      loop do
-        answer = gets.chomp.downcase
-        break if ['h', 's'].include?(answer)
-        puts "Please enter only 'h' or 's' "
-      end
-
-      if answer == 's'
+      if human.hit_or_stay == 's'
         puts "You have chosen to stay. It is now the dealers' turn"
         break
       else
