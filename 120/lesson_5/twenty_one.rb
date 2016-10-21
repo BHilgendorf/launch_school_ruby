@@ -43,7 +43,7 @@ module Hand
                end
     end
 
-    hand.select(&:ace?).count.times do
+    hand.count(&:ace?).times do
       break if total <= 21
       total -= 10
     end
