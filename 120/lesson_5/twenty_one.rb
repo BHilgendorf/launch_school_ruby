@@ -64,9 +64,8 @@ end
 class Card
   attr_reader :suit, :face_value
 
-  SUITS = ['Hearts', 'Diamonds', 'Spades', 'Clubs'].freeze
-  VALUES = ['2', '3', '4', '5', '6', '7', '8', '9',
-            '10', 'J', 'Q', 'K', 'A'].freeze
+  SUITS = %w(Hearts Diamonds Spades Clubs).freeze
+  VALUES = %w(2 3 4 5 6 7 8 9 10 J Q K A).freeze
 
   def initialize(suit, face_value)
     @suit = suit
@@ -102,17 +101,17 @@ class Deck
   end
 
   def deal_card
-    @cards.pop
+    cards.pop
   end
 
   def reset
     @cards = []
     Card::SUITS.each do |suit|
       Card::VALUES.each do |face_value|
-        @cards << Card.new(suit, face_value)
+        cards << Card.new(suit, face_value)
       end
     end
-    @cards.shuffle!
+    cards.shuffle!
   end
 end
 
@@ -147,7 +146,7 @@ class Human < Player
     puts "Would you like to (h)it or (s)stay?"
     loop do
       answer = gets.chomp.downcase
-      break if ['h', 's'].include?(answer)
+      break if %w(h s).include?(answer)
       puts "Please enter only 'h' or 's' "
     end
     answer
@@ -155,7 +154,7 @@ class Human < Player
 end
 
 class Dealer < Player
-  COMPUTER_NAMES = ['C3P0', 'Mr. Robot', 'Siri'].freeze
+  COMPUTER_NAMES = %w(C3PO Mr.Robot Siri Hal).freeze
 
   def set_name
     self.name = COMPUTER_NAMES.sample
@@ -209,9 +208,7 @@ class Game
 
   def dealer_turn
     loop do
-      if dealer.total >= 17 && !dealer.busted?
-        break
-      elsif dealer.busted?
+      if dealer.busted? || dealer.total >= 17
         break
       else
         puts " "
@@ -247,10 +244,10 @@ class Game
     puts "Would you like to play another hand? (y/n)"
     loop do
       answer = gets.chomp.downcase
-      break if ['y', 'n'].include? answer
+      break if %w(y n).include? answer
       puts "Please enter only y or n"
     end
-    answer == 'y' ? true : false
+    answer == 'y'
   end
 
   def setup_game
