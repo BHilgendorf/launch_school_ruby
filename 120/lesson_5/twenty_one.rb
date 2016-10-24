@@ -22,18 +22,18 @@ end
 
 module Hand
   def add_new_card(new_card)
-    hand << new_card
+    self.hand << new_card
   end
 
   def display_cards_and_total
     puts "#{name} has: "
-    hand.each { |card| puts card }
+    self.hand.each { |card| puts card }
     show_total
   end
 
   def total
     total = 0
-    hand.each do |card|
+    self.hand.each do |card|
       total += if card.ace?
                  11
                elsif card.jack? || card.queen? || card.king?
@@ -43,7 +43,7 @@ module Hand
                end
     end
 
-    hand.count(&:ace?).times do
+    self.adhand.count(&:ace?).times do
       break if total <= 21
       total -= 10
     end
