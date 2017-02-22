@@ -33,7 +33,7 @@ class Octal
   def to_decimal
     return 0 if number.empty?
 
-     counter = number.size - 1
+    counter = number.size - 1
     result = []
     number.each do |digit|
       result << digit * (BASE**counter)
