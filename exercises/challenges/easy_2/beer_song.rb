@@ -1,6 +1,10 @@
 class BeerSong
   def initialize
     @lyrics = []
+    compose_song
+  end
+
+  def compose_song
     @lyrics[0] = verse_0
     @lyrics[1] = verse_1
     @lyrics[2] = verse_2
@@ -16,12 +20,7 @@ class BeerSong
   end
 
   def verses(starting_verse, ending_verse)
-    verses = (ending_verse..starting_verse).to_a
-
-    result = @lyrics.select.with_index do |_, index|
-      verses.include?(index)
-    end
-    result.reverse.join("\n")
+    @lyrics[ending_verse..starting_verse].reverse.join("\n")
   end
 
   def verse_2
@@ -43,3 +42,7 @@ class BeerSong
     @lyrics.reverse.join("\n")
   end
 end
+
+
+test = BeerSong.new
+puts test.verses(6, 5)
